@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mercury Notes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .note-input {
+            margin-bottom: 20px;
+        }
+        #new-note {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: none;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+        }
+        .buttons button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007BFF;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .buttons button:hover {
+            background-color: #0056b3;
+        }
+        .note-list {
+            margin-top: 20px;
+        }
+        #notes {
+            list-style: none;
+            padding: 0;
+        }
+        #notes li {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+        }
+        #notes li label {
+            margin-right: 10px;
+        }
+        #notes li .content {
+            flex: 1;
+        }
+        #combine-notes {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background-color: #28a745;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        #combine-notes:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mercury Notes</h1>
+        <div class="note-input">
+            <textarea id="new-note" placeholder="Write your note here..."></textarea>
+            <div class="buttons">
+                <button id="save-note">Save</button>
+                <button id="clear-note">Clear</button>
+                <button id="cancel-note">Cancel</button>
+            </div>
+        </div>
+        <div class="note-list">
+            <h2>Saved Notes</h2>
+            <ul id="notes"></ul>
+            <button id="combine-notes">Combine Selected Notes</button>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const newNoteInput = document.getElementById('new-note');
+            const saveNoteButton = document.getElementById('save-note');
+            const clearNoteButton = document.getElementById('clear-note');
+            const cancelNoteButton = document.getElementById('cancel-note');
+            const notesList = document.getElementById('notes');
+            const combineNotesButton = document.getElementById('combine-notes');
+
+            let notes = JSON.parse(localStorage.getItem('mercuryNotes')) || [];
+
+            function saveNote() {
+                const noteContent = newNoteInput.value.trim();
+                if (noteContent) {
+                    notes.push(noteContent);
+                    localStorage.setItem('mercuryNotes', JSON.stringify(notes));
+                    renderNotes();
+                    newNoteInput.value = '';
+                }
+            }
+
+            function renderNotes() {
+                notesList.innerHTML = '';
+                notes.forEach((note, index) => {
+                    const li = document.createElement('li');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    const label = document.createElement('label');
+                    label.textContent = note;
+                    const content = document.createElement('span');
+                    content.className = 'content';
+                    content.appendChild(label);
+                    li.appendChild(checkbox);
+                    li.appendChild(content);
+                    notesList.appendChild(li);
+                });
+            }
+
+            function clearNote() {
+                newNoteInput.value = '';
+            }
+
+            function cancelNote() {
+                newNoteInput.value = '';
+            }
+
+            function combineSelectedNotes() {
+                const selectedNotes = Array.from(notesList.querySelectorAll('input[type="checkbox"]:checked'))
+                    .map(checkbox => checkbox.nextElementSibling.textContent);
+                newNoteInput.value = selectedNotes.join('\n');
+            }
+
+            saveNoteButton.addEventListener('click', saveNote);
+            clearNoteButton.addEventListener('click', clearNote);
+            cancelNoteButton.addEventListener('click', cancelNote);
+            combineNotesButton.addEventListener('click', combineSelectedNotes);
+
+            renderNotes();
+        });
+    </script>
+<div style="text-align: center;">
+  <p>Created By Inception's Mercury Coder</p>
+</div>
+
+
+</body>
+</html>
